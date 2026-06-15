@@ -1,0 +1,20 @@
+[project]
+name = "py-yjs-libp2p"
+version = "0.1.0"
+description = "Local-only, multi-process Python implementation of core libp2p concepts with Streamlit."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "trio",
+    "hypercorn[trio]",
+    "starlette",
+    "multiaddr",
+    "zeroconf",
+    "streamlit",
+    "requests",
+    "libp2p",
+    "async-generator>=1.10",
+]
+
+[tool.uv.sources]
+libp2p = { path = "../py-libp2p" }

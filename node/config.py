@@ -17,5 +17,8 @@ GOSSIPSUB_TIME_TO_LIVE = 60
 GOSSIPSUB_GOSSIP_WINDOW = 3
 GOSSIPSUB_GOSSIP_HISTORY = 5
 
+#-------------MDNS----------------
+MDNS_ENABLED_DEFAULT = True
+
 # --- Stream protocol for state sync ---
 SYNC_PROTOCOL_ID = TProtocol("/py-yjs-libp2p/sync/1.0.0")

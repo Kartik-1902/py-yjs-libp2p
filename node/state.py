@@ -23,7 +23,7 @@ class SharedDocument:
         }
 
 @dataclass
-class DoccumentUpdate:
+class DocumentUpdate:
     content: str
     version: int
     last_mod_by: str
@@ -34,6 +34,6 @@ class DoccumentUpdate:
         return json.dumps(asdict(self)).encode("utf-8")
 
     @classmethod
-    def deserialize (cls , data: bytes) -> "DoccumentUpdate" :
+    def deserialize (cls , data: bytes) -> "DocumentUpdate" :
         import json
         return cls (** json.loads(data.decode("utf-8")))

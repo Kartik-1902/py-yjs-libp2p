@@ -1,3 +1,5 @@
+from anyio import sleep
+from libp2p import pubsub
 from httpcore import __name
 import argparse
 import argparse
@@ -6,6 +8,8 @@ import trio
 from multiaddr import Multiaddr
 from hypercorn.config import Config
 from hypercorn.trio import serve
+from libp2p.tools.anyio_service import background_trio_service
+
 
 from .config import DEFAULT_API_PORT, DEFAULT_P2P_PORT
 from .state import SharedDocument
@@ -19,7 +23,7 @@ logger = logging.getLogger(__name__)
 async def run(args):
     state = SharedDocument()
 
-    p2p = p2pNode(node_id=args.node_id , p2p_port=args.p2p_port)
+    p2p = p2pNode(node_id=args.node_id , p2p_port=args.p2p_port, state=state )
     await p2p.setup()
 
     app = create_api_app(p2p ,state)
@@ -38,12 +42,21 @@ async def run(args):
     try: 
         async with p2p.host.run(listen_addrs=listen_addrs):
             print(f"P2P Addr: {p2p.host.get_addrs()}")
-            if args.connect:
-                await p2p.connect_to_peer(args.connect)
+            
 
-            async with trio.open_nursery() as nursery:
-                # start web server
-                nursery.start_soon(serve,app, hc_config)
+            async with background_trio_service(p2p.pubsub):
+                async with background_trio_service(p2p.gossipsub):
+                    
+                    token = trio.lowlevel.current_trio_token()
+                    p2p.start_mdns(token)
+                    async with trio.open_nursery() as nursery:
+                        # start web server
+                        nursery.start_soon(serve,app, hc_config)
+                        nursery.start_soon(p2p.read_message, "default-topic",state)
+                        nursery.start_soon(p2p.mdns_consumer)
+                        if args.connect:
+                            peer_id=await p2p.connect_to_peer(args.connect)
+                            nursery.start_soon(p2p._request_sync, peer_id)
     finally:
         logger.info("shutdown gracefully...")
         await p2p.host.close()

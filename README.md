@@ -24,15 +24,17 @@ The network is completely decentralized and relies on the following core compone
 
 ### Installation
 
-Clone the repository and install the dependencies:
+Ensure you have `uv` installed, then simply clone the repository and sync the environment:
 
 ```bash
-uv pip install trio hypercorn starlette multiaddr zeroconf streamlit streamlit-autorefresh
+uv sync
 ```
 
-### Running the Network (Automated)
+This will automatically install all dependencies, including the strictly version-pinned `py-libp2p` and tools like Streamlit.
 
-We have included a network launcher that automatically spins up 3 background nodes (Node 0, Node 1, and Node 2) and assigns them proper API and P2P ports.
+### Running the Network & UI
+
+We have included a network launcher that automatically spins up 3 background nodes (Node 0, Node 1, and Node 2).
 
 1. Start the Network Launcher:
 
@@ -42,13 +44,16 @@ uv run python launcher/spawn_network.py
 
 *Leave this terminal open. Press `Ctrl+C` to gracefully shut down all 3 nodes at once.*
 
-2. Open a **new terminal tab** and launch the Streamlit Dashboard:
+2. Open a **new terminal tab** and launch the Streamlit Google Docs UI:
 
 ```bash
-uv run streamlit run ui/dashboard.py
+uv run streamlit run ui/local_node.py
 ```
 
-3. A web browser will open at `http://localhost:8501`. You can use the left sidebar to send edits to specific nodes and visually watch the GossipSub network sync the CRDT state across all nodes in real-time!
+3. A web browser will open at `http://localhost:8501`. 
+   - Open multiple tabs in your browser. Each tab will automatically claim a free node (Node 0, Node 1, etc.) using heartbeat leases.
+   - You can use the left sidebar to switch rooms (topics). 
+   - Nodes in the same room will sync their state instantly via GossipSub, while nodes in different rooms remain securely isolated!
 
 ## 🛠️ Manual Node Execution
 
@@ -78,6 +83,12 @@ You can interact with the nodes using any HTTP client (like `curl` or PowerShell
 Invoke-RestMethod -Uri http://127.0.0.1:8000/state
 ```
 
+**Change Room:**
+
+```powershell
+Invoke-RestMethod -Uri http://127.0.0.1:8000/topic -Method POST -Body '{"topic":"Secret-Room"}' -ContentType "application/json"
+```
+
 **Edit Document:**
 
 ```powershell
@@ -90,5 +101,5 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/edit -Method POST -Body '{"document
 - [x] Phase 2: CRDT State Data Structures & HTTP API
 - [x] Phase 3: GossipSub Radio & Stream Sync (Late Joiner Problem)
 - [x] Phase 4: mDNS Local Network Discovery
-- [x] Phase 5: Automated Network Launcher & Streamlit Dashboard
-- [ ] Next: Dynamic Room/Topic Switching
+- [x] Phase 5: Automated Network Launcher
+- [x] Phase 6: Dynamic Room/Topic Switching & Google Docs UI

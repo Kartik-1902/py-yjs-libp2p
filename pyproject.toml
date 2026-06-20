@@ -14,7 +14,8 @@ dependencies = [
     "requests",
     "libp2p",
     "async-generator>=1.10",
+    "streamlit-autorefresh>=1.0.1",
 ]
 
 [tool.uv.sources]
-libp2p = { path = "../py-libp2p" }
+libp2p = { git = "https://github.com/Kartik-1902/py-libp2p.git", rev = "29e361b9774cfb4f415b1a3ec9af5fe577bb5e78" }

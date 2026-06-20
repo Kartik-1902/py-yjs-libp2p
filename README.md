@@ -9,34 +9,41 @@ This project demonstrates how to build a decentralized, real-time document synch
 The network is completely decentralized and relies on the following core components:
 
 1. **mDNS (Zero-Configuration Discovery):** Nodes automatically discover and connect to each other on the local Wi-Fi/LAN network without needing hardcoded IP addresses.
-2. **GossipSub (Real-Time Broadcasting):** When a document is edited, the edit is broadcasted to the entire network mesh in milliseconds.
-3. **Stream Sync (Late Joiner Reconciliation):** If a new node joins the network after edits have already been made, it opens a direct 1-on-1 TCP stream to an existing peer to download the full document state.
-4. **CRDT State Management:** Edits are reconciled using a Last-Write-Wins (LWW) mechanism based on Document Versions to ensure mathematically idempotent updates regardless of network delays or race conditions.
-5. **Trio Async Loop:** High-performance asynchronous execution bridging the Libp2p network layer with the HTTP API layer.
-6. **Streamlit UI:** A decoupled, real-time Web Dashboard that acts as a visual "Control Panel" to monitor the underlying P2P network.
+1. **GossipSub (Real-Time Broadcasting):** When a document is edited, the edit is broadcasted to the entire network mesh in milliseconds.
+1. **Stream Sync (Late Joiner Reconciliation):** If a new node joins the network after edits have already been made, it opens a direct 1-on-1 TCP stream to an existing peer to download the full document state.
+1. **CRDT State Management:** Edits are reconciled using a Last-Write-Wins (LWW) mechanism based on Document Versions to ensure mathematically idempotent updates regardless of network delays or race conditions.
+1. **Trio Async Loop:** High-performance asynchronous execution bridging the Libp2p network layer with the HTTP API layer.
+1. **Streamlit UI:** A decoupled, real-time Web Dashboard that acts as a visual "Control Panel" to monitor the underlying P2P network.
 
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Python 3.10+
 - [uv](https://github.com/astral-sh/uv) (Extremely fast Python package manager)
 
 ### Installation
+
 Clone the repository and install the dependencies:
+
 ```bash
 uv pip install trio hypercorn starlette multiaddr zeroconf streamlit streamlit-autorefresh
 ```
 
 ### Running the Network (Automated)
+
 We have included a network launcher that automatically spins up 3 background nodes (Node 0, Node 1, and Node 2) and assigns them proper API and P2P ports.
 
 1. Start the Network Launcher:
+
 ```bash
 uv run python launcher/spawn_network.py
 ```
+
 *Leave this terminal open. Press `Ctrl+C` to gracefully shut down all 3 nodes at once.*
 
 2. Open a **new terminal tab** and launch the Streamlit Dashboard:
+
 ```bash
 uv run streamlit run ui/dashboard.py
 ```
@@ -48,11 +55,13 @@ uv run streamlit run ui/dashboard.py
 If you prefer to start nodes manually to observe their terminal outputs:
 
 **Start Node A:**
+
 ```bash
 uv run python -m node.main --node-id NodeA --api-port 8000 --p2p-port 9000
 ```
 
 **Start Node B:**
+
 ```bash
 uv run python -m node.main --node-id NodeB --api-port 8001 --p2p-port 9001
 ```
@@ -60,19 +69,23 @@ uv run python -m node.main --node-id NodeB --api-port 8001 --p2p-port 9001
 Within 3-5 seconds, Node A and Node B will automatically discover each other via mDNS and sync their states.
 
 ### Interacting via API
+
 You can interact with the nodes using any HTTP client (like `curl` or PowerShell `Invoke-RestMethod`):
 
 **Check State:**
+
 ```powershell
 Invoke-RestMethod -Uri http://127.0.0.1:8000/state
 ```
 
 **Edit Document:**
+
 ```powershell
 Invoke-RestMethod -Uri http://127.0.0.1:8000/edit -Method POST -Body '{"document":{"content":"Hello P2P World!"}}' -ContentType "application/json"
 ```
 
 ## 📋 Project Status
+
 - [x] Phase 1: Core P2P Node & Trio Nursery Integration
 - [x] Phase 2: CRDT State Data Structures & HTTP API
 - [x] Phase 3: GossipSub Radio & Stream Sync (Late Joiner Problem)

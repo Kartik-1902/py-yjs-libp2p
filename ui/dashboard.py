@@ -8,7 +8,7 @@ st.title("🌐 P2P Document Synchronization Dashboard")
 st_autorefresh(interval=1000)
 # 1. Read the auto-discovery registry
 try:
-    with open("network_registry.json", "r") as f:
+    with open("network_registry.json") as f:
         registry = json.load(f)
         nodes = registry.get("nodes", [])
 except FileNotFoundError:
@@ -26,7 +26,7 @@ if st.sidebar.button("Submit Edit"):
     try:
         url = f"http://127.0.0.1:{target_port}/edit"
         payload = {"document": {"content": new_content}}
-        
+
         # Fire the POST request!
         response = requests.post(url, json=payload)
         if response.status_code == 200:
@@ -51,7 +51,9 @@ for node in nodes:
         response = requests.get(url, timeout=2)
         if response.status_code == 200:
             raw_json = response.json()
-            fetched_states.append({"status": "online", "data": raw_json.get("document", {})})
+            fetched_states.append(
+                {"status": "online", "data": raw_json.get("document", {})}
+            )
         else:
             fetched_states.append({"status": "api_error", "code": response.status_code})
     except requests.exceptions.RequestException:
@@ -65,21 +67,20 @@ for i, node in enumerate(nodes):
     with cols[i]:
         st.markdown(f"### {node['id']}")
         st.caption(f"API: {node['api_port']} | P2P: {node['p2p_port']}")
-        
+
         if state_info["status"] == "online":
             st.success("🟢 Online")
             doc = state_info["data"]
-            
+
             # Render the CRDT State instantly!
             st.metric("Document Version", doc.get("version", 0))
-            
+
             st.markdown("**Document Content:**")
             st.info(doc.get("content", "") if doc.get("content") else "(Empty)")
-            
+
             st.caption(f"Last modified by Peer ID: \n`{doc.get('last_mod_by', 'N/A')}`")
-            
+
         elif state_info["status"] == "api_error":
             st.warning(f"🟡 API Error: {state_info['code']}")
         else:
             st.error("🔴 Node Offline")
- 

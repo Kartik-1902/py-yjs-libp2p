@@ -1,13 +1,13 @@
-
 from dataclasses import dataclass, asdict
 
-class SharedDocument: 
+
+class SharedDocument:
     def __init__(
         self,
-        content: str="",
-        version: int= 0,
-        last_mod_by: str="",
-        last_updated_at: float =0.0,
+        content: str = "",
+        version: int = 0,
+        last_mod_by: str = "",
+        last_updated_at: float = 0.0,
     ):
         self.content = content
         self.version = version
@@ -15,12 +15,13 @@ class SharedDocument:
         self.last_updated_at = last_updated_at
 
     def to_dict(self) -> dict:
-        return{
+        return {
             "content": self.content,
             "version": self.version,
             "last_mod_by": self.last_mod_by,
             "last_updated_at": self.last_updated_at,
         }
+
 
 @dataclass
 class DocumentUpdate:
@@ -28,12 +29,14 @@ class DocumentUpdate:
     version: int
     last_mod_by: str
     last_updated_at: float
-    
+
     def serialize(self) -> bytes:
-        import json 
+        import json
+
         return json.dumps(asdict(self)).encode("utf-8")
 
     @classmethod
-    def deserialize (cls , data: bytes) -> "DocumentUpdate" :
+    def deserialize(cls, data: bytes) -> "DocumentUpdate":
         import json
-        return cls (** json.loads(data.decode("utf-8")))
+
+        return cls(**json.loads(data.decode("utf-8")))

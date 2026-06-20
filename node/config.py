@@ -17,7 +17,7 @@ GOSSIPSUB_TIME_TO_LIVE = 60
 GOSSIPSUB_GOSSIP_WINDOW = 3
 GOSSIPSUB_GOSSIP_HISTORY = 5
 
-#-------------MDNS----------------
+# -------------MDNS----------------
 MDNS_ENABLED_DEFAULT = True
 
 # --- Stream protocol for state sync ---

@@ -20,7 +20,7 @@ The network is completely decentralized and relies on the following core compone
 ### Prerequisites
 
 - Python 3.10+
-- [uv](https://github.com/astral-sh/uv) (Extremely fast Python package manager)
+- [uv](https://github.com/astral-sh/uv) (Python package manager)
 
 ### Installation
 

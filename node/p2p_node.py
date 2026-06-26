@@ -134,11 +134,11 @@ class p2pNode:
         stream = None
         try:
             stream = await self.host.new_stream(peer_id, [SYNC_PROTOCOL_ID])
-            
+
             # 1. Send the topic we want to sync
             request_data = json.dumps({"topic": self.current_topic}).encode("utf-8")
             await stream.write(request_data)
-            
+
             # 2. Wait for response
             data = await stream.read(10 * 1024 * 1024)
             if data:
@@ -146,7 +146,7 @@ class p2pNode:
                 if state_dict.get("status") == "topic_mismatch":
                     logger.info(f"sync skipped: peer is not in {self.current_topic}")
                     return
-                    
+
                 if state_dict.get("version", -1) > self.state.version:
                     incoming_content = state_dict["content"]
                     if not isinstance(self.state.content, dict):
@@ -203,10 +203,12 @@ class p2pNode:
                 requested_topic = req_json.get("topic")
 
                 if requested_topic != self.current_topic:
-                    response_byte = json.dumps({"status": "topic_mismatch"}).encode("utf-8")
+                    response_byte = json.dumps({"status": "topic_mismatch"}).encode(
+                        "utf-8"
+                    )
                 else:
                     response_byte = json.dumps(self.state.to_dict()).encode("utf-8")
-                    
+
                 await stream.write(response_byte)
                 logger.info("stream write successful")
         except Exception as e:

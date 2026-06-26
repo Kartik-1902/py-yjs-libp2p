@@ -50,9 +50,9 @@ uv run python launcher/spawn_network.py
 uv run streamlit run ui/local_node.py
 ```
 
-3. A web browser will open at `http://localhost:8501`. 
+3. A web browser will open at `http://localhost:8501`.
    - Open multiple tabs in your browser. Each tab will automatically claim a free node (Node 0, Node 1, etc.) using heartbeat leases.
-   - You can use the left sidebar to switch rooms (topics). 
+   - You can use the left sidebar to switch rooms (topics).
    - Nodes in the same room will sync their state instantly via GossipSub, while nodes in different rooms remain securely isolated!
 
 ## 🛠️ Manual Node Execution

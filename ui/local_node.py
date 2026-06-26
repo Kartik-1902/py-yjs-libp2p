@@ -15,7 +15,9 @@ from node.formula import evaluate_all_cells
 COLUMNS = ["A", "B", "C", "D", "E"]
 ROWS = 10
 
-st.set_page_config(page_title="P2P Spreadsheet", layout="wide", initial_sidebar_state="collapsed")
+st.set_page_config(
+    page_title="P2P Spreadsheet", layout="wide", initial_sidebar_state="collapsed"
+)
 
 # ── Custom CSS: Excel-inspired spreadsheet ──
 st.markdown(
@@ -101,7 +103,7 @@ st_autorefresh(interval=1000, key="network_poll")
 
 # ── 1. Read the auto-discovery registry ──
 try:
-    with open("network_registry.json", "r") as f:
+    with open("network_registry.json") as f:
         registry = json.load(f)
         nodes = registry.get("nodes", [])
 except FileNotFoundError:
@@ -155,7 +157,9 @@ with st.sidebar:
     st.caption(f"API Port: {target_port}")
     st.markdown("---")
     st.markdown("#### 🚪 Switch Room")
-    new_room = st.text_input("Room Name", value="default-topic", label_visibility="collapsed")
+    new_room = st.text_input(
+        "Room Name", value="default-topic", label_visibility="collapsed"
+    )
     if st.button("Join Room", use_container_width=True):
         try:
             requests.post(
@@ -225,7 +229,11 @@ def dataframe_to_cells(df: pd.DataFrame) -> dict:
     cells_out = {}
     for col in COLUMNS:
         for row_idx in range(ROWS):
-            val = str(df.at[row_idx + 1, col]) if df.at[row_idx + 1, col] is not None else ""
+            val = (
+                str(df.at[row_idx + 1, col])
+                if df.at[row_idx + 1, col] is not None
+                else ""
+            )
             cell_key = f"{col}{row_idx + 1}"
             cells_out[cell_key] = val
     return cells_out
@@ -283,7 +291,9 @@ col_sel, row_sel, formula_input = st.columns([1, 1, 6])
 with col_sel:
     selected_col = st.selectbox("Col", COLUMNS, index=0, label_visibility="collapsed")
 with row_sel:
-    selected_row = st.selectbox("Row", list(range(1, ROWS + 1)), index=0, label_visibility="collapsed")
+    selected_row = st.selectbox(
+        "Row", list(range(1, ROWS + 1)), index=0, label_visibility="collapsed"
+    )
 
 selected_cell = f"{selected_col}{selected_row}"
 current_raw_value = cells.get(selected_cell, "")

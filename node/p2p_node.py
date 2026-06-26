@@ -91,7 +91,11 @@ class p2pNode:
 
         self.current_topic = topic
         self.state.version = 0
-        self.state.content = ""
+        self.state.content = {}
+
+        # Subscribe BEFORE spawning read loop / sync so the subscription
+        # is guaranteed to be active when sync responses arrive.
+        await self.subscribe(topic)
 
         self.topic_cancel_scope = trio.CancelScope()
         self.nursery.start_soon(self._read_message_loop)
@@ -144,7 +148,11 @@ class p2pNode:
                     return
                     
                 if state_dict.get("version", -1) > self.state.version:
-                    self.state.content = state_dict["content"]
+                    incoming_content = state_dict["content"]
+                    if not isinstance(self.state.content, dict):
+                        self.state.content = {}
+                    if isinstance(incoming_content, dict):
+                        self.state.content.update(incoming_content)
                     self.state.version = state_dict["version"]
                     self.state.last_mod_by = state_dict["last_mod_by"]
                     self.state.last_updated_at = state_dict["last_updated_at"]
@@ -213,7 +221,9 @@ class p2pNode:
         logger.info(f"Subscribed to topic: {topic}")
 
     async def read_message(self, sheet_topic: str, state) -> None:
-        await self.subscribe(sheet_topic)
+        # Only subscribe if not already subscribed (join_topic pre-subscribes)
+        if sheet_topic not in self.subscription:
+            await self.subscribe(sheet_topic)
         subscription = self.subscription.get(sheet_topic)
 
         if not subscription:
@@ -224,11 +234,14 @@ class p2pNode:
                 message = await subscription.get()
                 incoming_message = DocumentUpdate.deserialize(message.data)
                 if incoming_message.version > state.version:
-                    state.content = incoming_message.content
+                    if not isinstance(state.content, dict):
+                        state.content = {}
+                    if isinstance(incoming_message.content, dict):
+                        state.content.update(incoming_message.content)
                     state.version = incoming_message.version
                     state.last_mod_by = incoming_message.last_mod_by
                     state.last_updated_at = incoming_message.last_updated_at
-                    print(f"[GOSSIPSUB] updated state, New state: {state.version}")
+                    print(f"[GOSSIPSUB] merged cells, New state: {state.version}")
                 else:
                     print("[GOSSIPSUB] ignored older state")
             except Exception as e:

@@ -4,12 +4,12 @@ from dataclasses import dataclass, asdict
 class SharedDocument:
     def __init__(
         self,
-        content: str = "",
+        content: dict | None = None,
         version: int = 0,
         last_mod_by: str = "",
         last_updated_at: float = 0.0,
     ):
-        self.content = content
+        self.content = content if content is not None else {}
         self.version = version
         self.last_mod_by = last_mod_by
         self.last_updated_at = last_updated_at
@@ -25,7 +25,7 @@ class SharedDocument:
 
 @dataclass
 class DocumentUpdate:
-    content: str
+    content: dict
     version: int
     last_mod_by: str
     last_updated_at: float

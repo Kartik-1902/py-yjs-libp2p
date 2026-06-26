@@ -25,3 +25,6 @@ network_registry.json
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Linter / Formatter caches
+.ruff_cache/

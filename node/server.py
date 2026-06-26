@@ -31,9 +31,15 @@ def create_api_app(p2p_node, state):
     async def edit_document(request):
         json_data = await request.json()
         new_doc = json_data.get("document", {})
-        new_content = new_doc.get("content", "")
+        new_content = new_doc.get("content", {})
 
-        state.content = new_content
+        # Defensive: ensure both sides are dicts
+        if not isinstance(new_content, dict):
+            new_content = {}
+        if not isinstance(state.content, dict):
+            state.content = {}
+
+        state.content.update(new_content)
         state.version += 1
         state.last_mod_by = p2p_node.peer_id_str
         state.last_updated_at = time()

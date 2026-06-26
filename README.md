@@ -2,7 +2,7 @@
 
 A local-only, multi-process Python implementation of CRDT (Conflict-free Replicated Data Type) synchronization over a true Peer-to-Peer network.
 
-This project demonstrates how to build a decentralized, real-time document synchronization engine (similar to Google Docs or Figma) using Py-Libp2p without any central servers.
+This project demonstrates how to build a decentralized, real-time spreadsheet synchronization engine (similar to Google Sheets) using Py-Libp2p without any central servers.
 
 ## 🏗️ Architecture
 
@@ -13,7 +13,7 @@ The network is completely decentralized and relies on the following core compone
 1. **Stream Sync (Late Joiner Reconciliation):** If a new node joins the network after edits have already been made, it opens a direct 1-on-1 TCP stream to an existing peer to download the full document state.
 1. **CRDT State Management:** Edits are reconciled using a Last-Write-Wins (LWW) mechanism based on Document Versions to ensure mathematically idempotent updates regardless of network delays or race conditions.
 1. **Trio Async Loop:** High-performance asynchronous execution bridging the Libp2p network layer with the HTTP API layer.
-1. **Streamlit UI:** A decoupled, real-time Web Dashboard that acts as a visual "Control Panel" to monitor the underlying P2P network.
+1. **Streamlit UI:** A decoupled, real-time Web Dashboard featuring an Excel-like spreadsheet grid, formula evaluation, and a formula bar to monitor and edit the underlying P2P network state.
 
 ## 🚀 Getting Started
 
@@ -44,7 +44,7 @@ uv run python launcher/spawn_network.py
 
 *Leave this terminal open. Press `Ctrl+C` to gracefully shut down all 3 nodes at once.*
 
-2. Open a **new terminal tab** and launch the Streamlit Google Docs UI:
+2. Open a **new terminal tab** and launch the Streamlit Spreadsheet UI:
 
 ```bash
 uv run streamlit run ui/local_node.py
@@ -92,7 +92,7 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/topic -Method POST -Body '{"topic":
 **Edit Document:**
 
 ```powershell
-Invoke-RestMethod -Uri http://127.0.0.1:8000/edit -Method POST -Body '{"document":{"content":"Hello P2P World!"}}' -ContentType "application/json"
+Invoke-RestMethod -Uri http://127.0.0.1:8000/edit -Method POST -Body '{"document":{"content":{"A1":"10", "B1":"=A1+5"}}}' -ContentType "application/json"
 ```
 
 ## 📋 Project Status
@@ -102,4 +102,5 @@ Invoke-RestMethod -Uri http://127.0.0.1:8000/edit -Method POST -Body '{"document
 - [x] Phase 3: GossipSub Radio & Stream Sync (Late Joiner Problem)
 - [x] Phase 4: mDNS Local Network Discovery
 - [x] Phase 5: Automated Network Launcher
-- [x] Phase 6: Dynamic Room/Topic Switching & Google Docs UI
+- [x] Phase 6: Dynamic Room/Topic Switching
+- [x] Phase 7: P2P Spreadsheet Grid & Formula Evaluation
